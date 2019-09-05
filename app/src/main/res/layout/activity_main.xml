@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="#FFF"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:id="@+id/appMainLogo"
+        android:src="@drawable/index"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:textSize="26dp"
+        android:layout_below="@id/appMainLogo"
+        android:typeface="monospace"
+        android:layout_marginTop="20dp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:id="@+id/appTitle"
+        android:textColor="@color/color_two"
+        android:text="BARI Mango"/>
+
+    <RelativeLayout
+        android:layout_width="200dp"
+        android:layout_marginTop="30dp"
+        android:layout_below="@+id/appTitle"
+        android:layout_centerHorizontal="true"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btnOpenLiveDetection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="openCameraActivity"
+            android:backgroundTint="@color/color_one"
+            android:textColor="#FFFFFF"
+            android:text="Open Live Detection"/>
+
+        <Button
+            android:layout_below="@+id/btnOpenLiveDetection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/selectFromGallery"
+            android:text="Select From Gallery"
+            android:backgroundTint="@color/color_two"
+            android:textColor="#FFFFFF"
+            android:onClick="openGalleryActivity" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_below="@+id/selectFromGallery"
+            android:layout_height="wrap_content"
+            android:onClick="CaptureFromCamera"
+            android:id="@+id/btnOpenCamera"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="@color/color_three"
+            android:text="Capture From Camera" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_below="@+id/btnOpenCamera"
+            android:layout_height="wrap_content"
+            android:onClick="performFileSearch"
+            android:id="@+id/btnSelectDirectory"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="@color/color_four"
+            android:text="Process Directory" />
+
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="5dp"
+            android:text='Developed by "A J M Touheedul Islam"'/>
+    </RelativeLayout>
+
+
+</RelativeLayout>

@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
         Calendar c = Calendar.getInstance();
         int cWeek = c.get(Calendar.WEEK_OF_YEAR);
-        if(cWeek > 36){
+        if(cWeek > 37){
             finish();
             moveTaskToBack(true);
         }

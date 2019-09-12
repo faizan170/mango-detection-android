@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -374,6 +375,11 @@ public class DirectoryProcess extends AppCompatActivity {
                         processEta.setTextColor(getResources().getColor(R.color.color_one));
                     }
                 });
+
+                Intent myIntent = new Intent(Intent.ACTION_VIEW);
+                myIntent.setData(Uri.fromFile(f));
+                Intent j = Intent.createChooser(myIntent, "Choose an application to open with:");
+                startActivity(j);
             }catch (Exception ex){
 
             }

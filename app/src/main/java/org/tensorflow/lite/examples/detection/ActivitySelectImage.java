@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +34,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class ActivitySelectImage extends AppCompatActivity {
 
@@ -49,9 +51,11 @@ public class ActivitySelectImage extends AppCompatActivity {
     private static final boolean TF_OD_API_IS_QUANTIZED = true;
     private static final String TF_OD_API_MODEL_FILE = "file:///android_asset/frozen_inference_graph.pb";
     private static final String TF_OD_API_LABELS_FILE = "file:///android_asset/labels.txt";
-
+    private Spinner spinner;
     int cropSize = TF_OD_API_INPUT_SIZE;
+    double weights[] = new double[]{0.220, 0.265, 0.250, 0.550, 0.490, 0.290, 0.178, 0.530};
     Bitmap toProcessImg;
+    Bitmap processedImg;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +66,7 @@ public class ActivitySelectImage extends AppCompatActivity {
         progressBarHolder = findViewById(R.id.progressBarHolder);
         progressBarHolderText = findViewById(R.id.progressBarHolderText);
         String res1 = getIntent().getExtras().getString("imageType");
+        spinner = findViewById(R.id.spinner1);
         if(res1.equals("gallery")) {
             try {
                 Bundle bd = getIntent().getExtras();
@@ -116,6 +121,7 @@ public class ActivitySelectImage extends AppCompatActivity {
     }
 
     public void startDetectionImage(View v) {
+        //Toast.makeText(this, "" + spinner.getSelectedItemPosition(), Toast.LENGTH_SHORT).show();
         new downloadASynTask().execute();
         //detectionCount.setText("Detected: " + totalCount + " mangoes");
 
@@ -129,9 +135,11 @@ public class ActivitySelectImage extends AppCompatActivity {
             final List<Classifier.Recognition> results = detector.recognizeImage(mLog);
             //Toast.makeText(this, "Results:" + results.size(), Toast.LENGTH_SHORT).show();
             Bitmap mutableBitmap = mLog.copy(Bitmap.Config.ARGB_8888, true);
-            float minimumConfidence = 0.5f;
+            float minimumConfidence = 0.35f;
             Bitmap cropCopyBitmap = Bitmap.createBitmap(mutableBitmap);
+
             final Canvas canvas = new Canvas(cropCopyBitmap);
+
             final Paint paint = new Paint();
             paint.setColor(Color.GREEN);
             paint.setStyle(Paint.Style.STROKE);
@@ -151,20 +159,23 @@ public class ActivitySelectImage extends AppCompatActivity {
 
                 if (location != null && result.getConfidence() >= minimumConfidence) {
                     i += 1;
-                    canvas.drawRect(location, paint);
+                    //canvas.drawRect(location, paint);
 
 
                     result.setLocation(location);
                     mappedRecognitions.add(result);
                 }
             }
-            canvas.drawText("Detected: " + i, 10, 10, paint);
+            //canvas.drawText("Detected: " + i * 3, 10, 10, paint);
+            //Log.d("Detected", String.valueOf(i));
+            i = i * 3;
             totalCount = i;
-
+            Log.d("Total Count:", String.valueOf(totalCount));
             //Toast.makeText(this, i + ":pp", Toast.LENGTH_SHORT).show();
-            imgProcess.setImageBitmap(cropCopyBitmap);
+            processedImg = cropCopyBitmap;
             return i;
         }catch (Exception ex){
+            Log.d("Detection Exception:", ex.getMessage());
             //Toast.makeText(this, ex.getMessage() + "error", Toast.LENGTH_SHORT).show();
             return 0;
         }
@@ -172,7 +183,9 @@ public class ActivitySelectImage extends AppCompatActivity {
     }
 
 
-    class  downloadASynTask extends AsyncTask<Void, Void, Integer>
+
+
+    class  downloadASynTask extends AsyncTask<Void, String, Integer>
     {
         @Override
         protected void onPreExecute()
@@ -183,19 +196,53 @@ public class ActivitySelectImage extends AppCompatActivity {
             progressBarHolder.setAnimation(inAnimation);
             //progressBarHolderText.setText("Loading Model");
             progressBarHolder.setVisibility(View.VISIBLE);
+            runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    progressBarHolderText.setText("Loading Model");
+                    //detectionCount.setText("INFO: Starting Processing");
+                }
+
+            });
+
 
         }
         @Override
         protected Integer doInBackground(Void... arg0) {
+            //String[][] results = new String[8][8];
+            publishProgress("INFO: Loading Model");
+            onProgressUpdate("INFO: Loading Model");
             LoadModel();
-            //progressBarHolderText.setText("Processing Image");
-            int res = DetectImage();
 
+            publishProgress("INFO: Processing");
+            onProgressUpdate("INFO: Processing");
+            Integer res = DetectImage();
+
+
+            Log.d("REs 1", String.valueOf(res));
             return res;
         }
 
+        private void onProgressUpdate(String progressResult) {
+            //Log.d("Progress: ", String.valueOf(i));
+
+                runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        progressBarHolderText.setText(progressResult);
+
+                        //detectionCount.setText(progressResult);
+                    }
+                });
+
+
+
+        }
+
         @Override
-        protected void onPostExecute(Integer result)
+        protected void onPostExecute(Integer results)
         {
             outAnimation = new AlphaAnimation(1f, 0f);
             outAnimation.setDuration(200);
@@ -205,18 +252,13 @@ public class ActivitySelectImage extends AppCompatActivity {
 
                 @Override
                 public void run() {
-                    detectionCount.setText("Detected: " + totalCount + " mangoes");
+                    imgProcess.setImageBitmap(processedImg);
+                    int index = (int)spinner.getSelectedItemId();
+                    detectionCount.setText("INFO: Detected " + totalCount + " Mangoes\n INFO: Total Weight: " + totalCount * weights[index] + " KGs");
                 }
             });
-        }
-    }
 
-    public void updateTextView(){
-        runOnUiThread(new Runnable() {
-            public void run() {
-                detectionCount.setText("Detected: " + totalCount + " mangoes");
-            }
-        });
+        }
     }
 
 

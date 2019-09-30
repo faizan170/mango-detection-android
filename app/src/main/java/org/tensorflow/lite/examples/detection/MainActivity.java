@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
         Calendar c = Calendar.getInstance();
         int cWeek = c.get(Calendar.WEEK_OF_YEAR);
-        if(cWeek > 37){
+        if(cWeek > 40){
             finish();
             moveTaskToBack(true);
         }
@@ -192,6 +192,7 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
             Uri photoUri = FileProvider.getUriForFile(this, getPackageName() +".provider", photoFile);
+            Log.d("Photo uri:", photoUri.toString());
             pictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
             startActivityForResult(pictureIntent, REQUEST_IMAGE);
         }

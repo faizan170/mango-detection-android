@@ -12,12 +12,24 @@
         android:layout_centerVertical="true"
         android:layout_height="wrap_content">
 
+        <Spinner
+            android:id="@+id/spinner1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/country_arrays"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="30dp"
+            android:prompt="@string/country_prompt" />
+
+
         <TextView
             android:layout_width="wrap_content"
+            android:layout_marginTop="50dp"
             android:layout_height="wrap_content"
             android:id="@+id/totalImagesHeading"
             android:layout_centerHorizontal="true"
             android:textSize="22dp"
+            android:layout_marginBottom="20dp"
             android:text="Total Images" />
 
         <TextView
@@ -25,6 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_below="@+id/totalImagesHeading"
+            android:layout_marginBottom="50dp"
             android:id="@+id/totalImagesCount"
             android:text=""/>
 
@@ -40,7 +53,7 @@
 
 
         <ProgressBar
-            android:layout_width="200dp"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:id="@+id/progressBar"
             android:max="100"

@@ -1,7 +1,9 @@
 package org.tensorflow.lite.examples.detection;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,6 +19,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +37,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import static android.provider.MediaStore.AUTHORITY;
+
 
 public class DirectoryProcess extends AppCompatActivity {
 
@@ -45,10 +50,14 @@ public class DirectoryProcess extends AppCompatActivity {
     private static final String TF_OD_API_MODEL_FILE = "file:///android_asset/frozen_inference_graph.pb";
     private static final String TF_OD_API_LABELS_FILE = "file:///android_asset/labels.txt";
     int cropSize = TF_OD_API_INPUT_SIZE;
+    double weights[] = new double[]{0.220, 0.265, 0.250, 0.550, 0.490, 0.290, 0.178, 0.530};
     private String dirPath = "";
     Handler mHandler;
     ProgressBar progressBar;
+    Spinner spinner;
     File[] allFiles;
+    int totalImgFiles;
+    Context mContext;
     //String imagesList[] = new String[]{};
     //String resultsList[] = new String[]{};
     //final ArrayList<String> imagesList = new ArrayList<String>();
@@ -66,7 +75,9 @@ public class DirectoryProcess extends AppCompatActivity {
         totalImagesCount = findViewById(R.id.totalImagesCount);
         //processProgress = findViewById(R.id.processProgress);
         progressBar = findViewById(R.id.progressBar);
+        spinner = findViewById(R.id.spinner1);
         mHandler = new Handler();
+        mContext = this;
         processEta = findViewById(R.id.processETA);
         String res1 = getIntent().getExtras().getString("imageType");
 
@@ -87,6 +98,7 @@ public class DirectoryProcess extends AppCompatActivity {
                         counter += 1;
                     }
                 }
+                totalImgFiles = counter;
 
                 results = new String[counter][2];
 
@@ -127,7 +139,7 @@ public class DirectoryProcess extends AppCompatActivity {
             final List<Classifier.Recognition> results = detector.recognizeImage(mLog);
             //Toast.makeText(this, "Results:" + results.size(), Toast.LENGTH_SHORT).show();
             Bitmap mutableBitmap = mLog.copy(Bitmap.Config.ARGB_8888, true);
-            float minimumConfidence = 0.5f;
+            float minimumConfidence = 0.35f;
             Bitmap cropCopyBitmap = Bitmap.createBitmap(mutableBitmap);
             final Canvas canvas = new Canvas(cropCopyBitmap);
             final Paint paint = new Paint();
@@ -169,61 +181,8 @@ public class DirectoryProcess extends AppCompatActivity {
     }
 
     public void processDirectoryImages(View v) {
-        //LoadModel();
         new downloadASynTask().execute();
-        /*
-        String filePath = dirPath + File.separator + "output.csv";
-        File f = new File(filePath);
-        CSVWriter writer;
-        FileWriter mFileWriter;
-        try {
-            if (f.exists()) {
-                if (f.delete()) {
-                    writer = new CSVWriter(new FileWriter(filePath));
-                } else {
-                    return;
-                }
-            } else {
-                writer = new CSVWriter(new FileWriter(filePath));
-            }
-            for (int i = 0; i < allFiles.length; i++) {
 
-                //float output = (i / allFiles.length) * 100;
-                //final int progressBarVal1 = Math.round(output);
-                //progressBar.setProgress(progressBarVal);
-                //processProgress.setText(i + "/" + allFiles.length);
-                */
-        /*
-                String[] index = allFiles[i].getName().split(Pattern.quote("."));
-
-                String ext = index[index.length - 1].toLowerCase();
-                Log.d("Extension", ext);
-                //Toast.makeText(this, "Ext:" + ext, Toast.LENGTH_SHORT).show();
-                //ext == "jpg" || ext == "png" || ext == "jpeg"
-                if (ext.equals("jpg") || ext.equals("png") || ext.equals("jpeg")) {
-                    Log.d("Files", "FileName:" + allFiles[i].getName());
-                    BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-                    Bitmap toProcessImg = BitmapFactory.decodeFile(allFiles[i].getAbsolutePath(), bmOptions);
-                    Log.d("ImgProp", "Height:" + toProcessImg.getHeight() + " - Width:" + toProcessImg.getWidth());
-                    int res = DetectImage(toProcessImg);
-                    Log.d("Result", "Res:" + res);
-                    if (res != -1) {
-                        //progressBar.setProgress(progressBarVal1);
-                        processProgress.setText("working");
-                        //Toast.makeText(this, allFiles[i].getName() + " : " + res, Toast.LENGTH_SHORT).show();
-                        String[] data = {allFiles[i].getName(), Integer.toString(res)};
-                        writer.writeNext(data);
-                    }
-                }
-
-            }
-            writer.close();
-            processProgress.setText("Done");
-        } catch (Exception ex) {
-            //processProgress.setText(ex.getMessage());
-            Toast.makeText(this, "Err:" + ex.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-        */
     }
 
 
@@ -246,7 +205,6 @@ public class DirectoryProcess extends AppCompatActivity {
         }
         @Override
         protected String[][] doInBackground(Void... arg0) {
-            //String[][] results = new String[8][8];
             publishProgress("LOADING_MODEL");
             onProgressUpdate("LOADING_MODEL");
 
@@ -254,21 +212,23 @@ public class DirectoryProcess extends AppCompatActivity {
             publishProgress("MODEL_LOADED");
             onProgressUpdate("MODEL_LOADED");
             int g = 0;
+            int k = 1;
             for (int i = 0; i < allFiles.length; i++) {
-                int k = i;
-                k += 1;
-                float output = (k * 100)  / allFiles.length;
 
-                int progressBarVal1 = Math.round(output);
 
-                //Log.d("Progress 1:", String.valueOf(progressBarVal1));
-                String progressResult = progressBarVal1 + "-" + k;
-                publishProgress(progressResult);
-                onProgressUpdate(progressResult);
                 String[] index = allFiles[i].getName().split(Pattern.quote("."));
 
                 String ext = index[index.length - 1].toLowerCase();
                 if (ext.equals("jpg") || ext.equals("png") || ext.equals("jpeg")) {
+                    float output = (k * 100)  / totalImgFiles;
+
+                    int progressBarVal1 = Math.round(output);
+
+                    //Log.d("Progress 1:", String.valueOf(progressBarVal1));
+                    String progressResult = progressBarVal1 + "-" + k;
+                    publishProgress(progressResult);
+                    onProgressUpdate(progressResult);
+                    k += 1;
                     BitmapFactory.Options bmOptions = new BitmapFactory.Options();
                     Bitmap toProcessImg = BitmapFactory.decodeFile(allFiles[i].getAbsolutePath(), bmOptions);
                     Log.d("ImgProp", "Height:" + toProcessImg.getHeight() + " - Width:" + toProcessImg.getWidth());
@@ -323,7 +283,7 @@ public class DirectoryProcess extends AppCompatActivity {
                         TextView processProgress1 = findViewById(R.id.processProgress);
                         processProgress1.setText(index[0] + "%");
                         TextView progressImgs = findViewById(R.id.processImgsView);
-                        progressImgs.setText(index[1] + "/" + allFiles.length);
+                        progressImgs.setText(index[1] + "/" + totalImgFiles);
 
                     }
                 });
@@ -344,44 +304,63 @@ public class DirectoryProcess extends AppCompatActivity {
                     }
                 });
 
-            String filePath = dirPath + File.separator + "output.csv";
+            String filePath = dirPath + File.separator + "output_" + spinner.getSelectedItem() + ".csv";
+            Log.d("Main Path", dirPath);
+            String file2Path = "/storage/emulated/0/BariMango/output_" + spinner.getSelectedItem() +".csv";
             File f = new File(filePath);
+            File f2 = new File(file2Path);
             CSVWriter writer;
+            CSVWriter writer2;
             FileWriter mFileWriter;
             try {
                 if (f.exists()) {
                     if (f.delete()) {
                         writer = new CSVWriter(new FileWriter(filePath));
+                        writer2 = new CSVWriter(new FileWriter(file2Path));
                     } else {
                         return;
                     }
                 } else {
                     writer = new CSVWriter(new FileWriter(filePath));
+                    writer2 = new CSVWriter(new FileWriter(file2Path));
                 }
                 //Log.d("Results length:", String.valueOf(results.length));
-
+                int index = (int)spinner.getSelectedItemId();
+                double weight = weights[index];
+                double finalWeights = 0.0;
+                int totalMangoes = 0;
                 for (int i = 0; i < results.length; i++) {
                     //Log.d("val", results[i][0]);
-                    String[] data = {results[i][0], results[i][1]};
+                    int detected = Integer.valueOf(results[i][1]) * 3;
+                    totalMangoes += detected;
+                    String[] data = {results[i][0], String.valueOf(detected)};
+                    finalWeights += detected * weight;
                     writer.writeNext(data);
+                    writer2.writeNext(data);
                 }
+                final double toShowWeight = finalWeights;
+                final int toShowTotal = totalMangoes;
                 writer.close();
+                writer2.close();
                 runOnUiThread(new Runnable() {
 
                     @Override
                     public void run() {
 
-                        processEta.setText("INFO: Saving Excel Done\nSaved to Current Photos directory");
+                        processEta.setText("INFO: Total Weight: " + Math.round(toShowWeight) + "\nINFO: Total Mangoes: " + toShowTotal + " KGs\nINFO: Saving Excel Done\nSaved to Current Photos directory");
                         processEta.setTextColor(getResources().getColor(R.color.color_one));
                     }
                 });
 
-                Intent myIntent = new Intent(Intent.ACTION_VIEW);
-                myIntent.setData(Uri.fromFile(f));
-                Intent j = Intent.createChooser(myIntent, "Choose an application to open with:");
-                startActivity(j);
-            }catch (Exception ex){
 
+                Intent myIntent = new Intent(Intent.ACTION_VIEW);
+                Uri uri = FileProvider.getUriForFile(mContext, BuildConfig.APPLICATION_ID + ".provider", f2);
+                myIntent.setDataAndType(uri, "text/csv");
+                myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                myIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivity(myIntent);
+            }catch (Exception ex){
+                Log.d("Except open:", ex.getMessage());
             }
         }
     }

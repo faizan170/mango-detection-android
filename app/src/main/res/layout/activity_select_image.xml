@@ -11,12 +11,22 @@
         android:layout_height="500dp"
         android:id="@+id/imgView" />
 
+
+    <Spinner
+        android:id="@+id/spinner1"
+        android:layout_width="match_parent"
+        android:layout_marginTop="50dp"
+        android:layout_height="wrap_content"
+        android:entries="@array/country_arrays"
+        android:prompt="@string/country_prompt" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/imgView"
         android:layout_marginTop="30dp"
         android:id="@+id/detectionCount"
+        android:layout_centerHorizontal="true"
         android:text=""
         android:textColor="@color/color_one"/>
 

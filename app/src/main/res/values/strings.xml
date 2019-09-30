@@ -3,4 +3,16 @@
     <string name="description_info">Info</string>
     <string name="request_permission">This sample needs camera permission.</string>
     <string name="camera_error">This device doesn\'t support Camera2 API.</string>
+    <string name="country_prompt">Choose a Type</string>
+
+    <string-array name="country_arrays">
+        <item>Gopalbhog</item>
+        <item>Khirsapat</item>
+        <item>Langra</item>
+        <item>Fazli</item>
+        <item>Ashwina</item>
+        <item>BARI Aam-2</item>
+        <item>BARI Aam-3</item>
+        <item>BARI Aam-4</item>
+    </string-array>
 </resources>

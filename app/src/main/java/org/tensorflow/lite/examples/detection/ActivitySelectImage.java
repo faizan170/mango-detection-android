@@ -168,7 +168,7 @@ public class ActivitySelectImage extends AppCompatActivity {
             }
             //canvas.drawText("Detected: " + i * 3, 10, 10, paint);
             //Log.d("Detected", String.valueOf(i));
-            i = i * 3;
+            //i = i * 3;
             totalCount = i;
             Log.d("Total Count:", String.valueOf(totalCount));
             //Toast.makeText(this, i + ":pp", Toast.LENGTH_SHORT).show();

@@ -331,7 +331,7 @@ public class DirectoryProcess extends AppCompatActivity {
                 int totalMangoes = 0;
                 for (int i = 0; i < results.length; i++) {
                     //Log.d("val", results[i][0]);
-                    int detected = Integer.valueOf(results[i][1]) * 3;
+                    int detected = Integer.valueOf(results[i][1]);
                     totalMangoes += detected;
                     String[] data = {results[i][0], String.valueOf(detected)};
                     finalWeights += detected * weight;

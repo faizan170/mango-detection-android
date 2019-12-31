@@ -48,12 +48,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        Calendar c = Calendar.getInstance();
-        int cWeek = c.get(Calendar.WEEK_OF_YEAR);
-        if(cWeek > 40){
-            finish();
-            moveTaskToBack(true);
-        }
 
 
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){

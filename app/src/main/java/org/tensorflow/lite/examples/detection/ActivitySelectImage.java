@@ -74,7 +74,7 @@ public class ActivitySelectImage extends AppCompatActivity {
                 Log.e("URI", uri.toString());
                 try {
                     toProcessImg = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
-                    imgProcess.setImageBitmap(toProcessImg);
+                    imgProcess.setImageBitmap(Bitmap.createScaledBitmap(toProcessImg, 500, 500, true));
                 } catch (FileNotFoundException e) {
                     Toast.makeText(this, "File Not found exception", Toast.LENGTH_LONG).show();
                     e.printStackTrace();
@@ -93,7 +93,7 @@ public class ActivitySelectImage extends AppCompatActivity {
                 BitmapFactory.Options bmOptions = new BitmapFactory.Options();
                 toProcessImg = BitmapFactory.decodeFile(imgPath,bmOptions);
                 //imgProcess.setImageURI(Uri.parse(imgPath));
-                imgProcess.setImageBitmap(toProcessImg);
+                imgProcess.setImageBitmap(Bitmap.createScaledBitmap(toProcessImg, 500, 500, true));
                 //setPic(currentPhotoPath);
             } catch (Exception EX) {
             }

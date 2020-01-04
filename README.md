@@ -20,3 +20,7 @@ Application can run either on device or emulator.
 
 ### Model used
 If you explicitly want to download the model, you can download from our site. Extract the zip to get the .pb and label file.
+ ---
+ ## Licence
+ 
+ [MIT](https://github.com/faizan170/mango-detection-android/edit/master/LICENCE)

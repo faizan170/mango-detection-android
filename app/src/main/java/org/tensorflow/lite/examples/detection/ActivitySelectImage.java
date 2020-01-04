@@ -159,7 +159,7 @@ public class ActivitySelectImage extends AppCompatActivity {
 
                 if (location != null && result.getConfidence() >= minimumConfidence) {
                     i += 1;
-                    //canvas.drawRect(location, paint);
+                    canvas.drawRect(location, paint);
 
 
                     result.setLocation(location);
